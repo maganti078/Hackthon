@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI PDF Q&A System</title>
+  <link rel="stylesheet" href="style.css"
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 700px;
+      margin: auto;
+      padding: 20px;
+    }
+    input, textarea, button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+    }
+    #answer {
+      background-color: #f1f1f1;
+      padding: 10px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>AI PDF Q&A for Students</h1>
+
+  <label for="pdf">Upload your PDF:</label>
+  <input type="file" id="pdf" accept=".pdf" />
+
+  <label for="question">Enter your question:</label>
+  <textarea id="question" rows="3" placeholder="e.g., What is photosynthesis?"></textarea>
+
+  <button onclick="submitQuestion()">Ask Question</button>
+
+  <div id="answer"></div>
+
+  <script>
+    async function submitQuestion() {
+      const pdfFile = document.getElementById('pdf').files[0];
+      const question = document.getElementById('question').value;
+      const answerDiv = document.getElementById('answer');
+
+      if (!pdfFile || !question) {
+        answerDiv.innerText = "Please upload a PDF and enter a question.";
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('pdf', pdfFile);
+      formData.append('question', question);
+
+      answerDiv.innerText = "Thinking... 🤔";
+
+      try {
+        const response = await fetch('http://localhost:8000/ask', {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await response.json();
+        answerDiv.innerText = data.answer || "No answer received.";
+      } catch (error) {
+        console.error(error);
+        answerDiv.innerText = "Something went wrong. Please try again.";
+      }
+    }
+  </script>
+
+</body>
+</html>
